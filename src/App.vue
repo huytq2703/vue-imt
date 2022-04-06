@@ -1,0 +1,218 @@
+<template>
+  <div
+    :class="containerClass"
+    @click="onWrapperClick"
+  >
+    <AppTopBar @menu-toggle="onMenuToggle" />
+    <div
+      class="layout-sidebar"
+      @click="onSidebarClick"
+    >
+      <AppMenu
+        :model="menu"
+        @menuitem-click="onMenuItemClick"
+      />
+    </div>
+
+    <div class="layout-main-container">
+      <div class="layout-main">
+        <router-view />
+      </div>
+      <AppFooter />
+    </div>
+
+    <AppConfig
+      :layout-mode="layoutMode"
+      @layout-change="onLayoutChange"
+    />
+    <transition name="layout-mask">
+      <div
+        v-if="mobileMenuActive"
+        class="layout-mask p-component-overlay"
+      />
+    </transition>
+  </div>
+</template>
+
+<script>
+import AppTopBar from "./AppTopbar.vue";
+import AppMenu from "./AppMenu.vue";
+import AppConfig from "./AppConfig.vue";
+import AppFooter from "./AppFooter.vue";
+import commonData from "./@db/common.js";
+
+export default {
+  components: {
+    AppTopBar: AppTopBar,
+    AppMenu: AppMenu,
+    AppConfig: AppConfig,
+    AppFooter: AppFooter,
+  },
+  emits: ["change-theme"],
+  setup() {
+    // Set Window Width in store
+    // this.$store.commit("app/UPDATE_WINDOW_WIDTH", window.innerWidth);
+    // const { width: windowWidth } = useWindowSize();
+    // watch(windowWidth, (val) => {
+    //   store.commit("app/UPDATE_WINDOW_WIDTH", val);
+    // });
+  },
+  data() {
+    return {
+      layoutMode: "static",
+      staticMenuInactive: false,
+      overlayMenuActive: false,
+      mobileMenuActive: false,
+      menu: [
+        {
+          label: "",
+          items: [
+            {
+              label: commonData.labelMenu.purchase,
+              icon: "pi pi-fw pi-home",
+              to: "/purchase",
+              linkIcon: require("./assets/Images/logo/logo-purchase.png"),
+            },
+            {
+              label: commonData.labelMenu.order,
+              icon: "pi pi-fw pi-home",
+              to: "/order",
+              linkIcon: require("./assets/Images/logo/logo-order.png"),
+            },
+            {
+              label: commonData.labelMenu.promotion,
+              icon: "pi pi-fw pi-home",
+              to: "/promotion",
+              linkIcon: require("./assets/Images/logo/logo-promotion.png"),
+            },
+            {
+              label: commonData.labelMenu.news,
+              icon: "pi pi-fw pi-home",
+              to: "/news",
+              linkIcon: require("./assets/Images/logo/logo-news.png"),
+            },
+            {
+              label: commonData.labelMenu.insurance,
+              icon: "pi pi-fw pi-home",
+              to: "/insurance",
+              linkIcon: require("./assets/Images/logo/logo-insurance.png"),
+            },
+            {
+              label: commonData.labelMenu.priceList,
+              icon: "pi pi-fw pi-home",
+              to: "/priceList",
+              linkIcon: require("./assets/Images/logo/logo-priceList.png"),
+            },
+          ]
+        },
+      ],
+    };
+  },
+  computed: {
+    containerClass() {
+      return [
+        "layout-wrapper",
+        {
+          "layout-overlay": this.layoutMode === "overlay",
+          "layout-static": this.layoutMode === "static",
+          "layout-static-sidebar-inactive":
+            this.staticMenuInactive && this.layoutMode === "static",
+          "layout-overlay-sidebar-active":
+            this.overlayMenuActive && this.layoutMode === "overlay",
+          "layout-mobile-sidebar-active": this.mobileMenuActive,
+          "p-input-filled": this.$primevue.config.inputStyle === "filled",
+          "p-ripple-disabled": this.$primevue.config.ripple === false,
+        },
+      ];
+    },
+    logo() {
+      return this.$appState.darkTheme
+        ? "images/logo-white.svg"
+        : "images/logo.svg";
+    },
+  },
+  watch: {
+    $route() {
+      this.menuActive = false;
+      this.$toast.removeAllGroups();
+    },
+  },
+  beforeUpdate() {
+    if (this.mobileMenuActive)
+      this.addClass(document.body, "body-overflow-hidden");
+    else this.removeClass(document.body, "body-overflow-hidden");
+  },
+  methods: {
+    onWrapperClick() {
+      if (!this.menuClick) {
+        this.overlayMenuActive = false;
+        this.mobileMenuActive = false;
+      }
+
+      this.menuClick = false;
+    },
+    onMenuToggle() {
+      this.menuClick = true;
+
+      if (this.isDesktop()) {
+        if (this.layoutMode === "overlay") {
+          if (this.mobileMenuActive === true) {
+            this.overlayMenuActive = true;
+          }
+
+          this.overlayMenuActive = !this.overlayMenuActive;
+          this.mobileMenuActive = false;
+        } else if (this.layoutMode === "static") {
+          this.staticMenuInactive = !this.staticMenuInactive;
+        }
+      } else {
+        this.mobileMenuActive = !this.mobileMenuActive;
+      }
+
+      event.preventDefault();
+    },
+    onSidebarClick() {
+      this.menuClick = true;
+    },
+    onMenuItemClick(event) {
+      if (event.item && !event.item.items) {
+        this.overlayMenuActive = false;
+        this.mobileMenuActive = false;
+      }
+    },
+    onLayoutChange(layoutMode) {
+      this.layoutMode = layoutMode;
+    },
+    addClass(element, className) {
+      if (element.classList) element.classList.add(className);
+      else element.className += " " + className;
+    },
+    removeClass(element, className) {
+      if (element.classList) element.classList.remove(className);
+      else
+        element.className = element.className.replace(
+          new RegExp(
+            "(^|\\b)" + className.split(" ").join("|") + "(\\b|$)",
+            "gi"
+          ),
+          " "
+        );
+    },
+    isDesktop() {
+      return window.innerWidth >= 992;
+    },
+    isSidebarVisible() {
+      if (this.isDesktop()) {
+        if (this.layoutMode === "static") return !this.staticMenuInactive;
+        else if (this.layoutMode === "overlay") return this.overlayMenuActive;
+      }
+
+      return true;
+    },
+  },
+};
+</script>
+
+<style lang="scss">
+@import "./App.scss";
+</style>

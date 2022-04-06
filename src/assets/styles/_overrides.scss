@@ -1,0 +1,20 @@
+// Suggested location to add your overrides so that migration would be easy by just updating the SASS folder in the future
+
+.p-breadcrumb {
+  background: $color-design-10;
+  border: 1px solid $color-design-10;
+  padding-left: 0px;
+
+  ul li .p-menuitem-link .p-menuitem-icon {
+    color: $color-design-17;
+  }
+
+  ul li.p-breadcrumb-chevron {
+    color: $color-design-17;
+  }
+
+  ul li:last-child .p-menuitem-text {
+    color: $color-design-17;
+  }
+}
+

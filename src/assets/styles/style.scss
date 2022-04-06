@@ -1,0 +1,58 @@
+@import "./color.scss";
+
+.custom-text {
+  font-weight: bold;
+}
+
+.bg-button-danger {
+  background-color: $color-design-10;
+}
+
+.text-black {
+  color: $color-black;
+}
+  
+//Font-size
+.h4 {
+  font-size: 17px;
+}
+.h5 {
+  font-size: 16px;
+}
+.h6 {
+  font-size: 15px;
+}
+.h7 {
+  font-size: 14px;
+}
+
+.h8 {
+  font-size: 13px;
+}
+
+.h9 {
+  font-size: 12px;
+}
+
+// width
+.w-5 {
+  width: 5%;
+}
+.w-10 {
+  width: 10%;
+}
+.w-15 {
+  width: 15%;
+}
+.w-20 {
+  width: 20%;
+}
+.w-30 {
+  width: 30%;
+}
+.w-35 {
+  width: 35%;
+}
+.w-40 {
+  width: 40%;
+}
